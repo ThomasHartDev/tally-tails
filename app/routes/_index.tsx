@@ -91,8 +91,8 @@ function Hero() {
     <section className="hero">
       <img
         className="hero-image"
-        src="/hero/hero.webp"
-        alt="TallyTails cat and dog mascots face off"
+        src="/brand/scenes/scene-close-race.webp"
+        alt="TallyTails cat and dog mascots in a tug of war"
         fetchPriority="high"
         decoding="async"
         width="2000"
@@ -218,8 +218,8 @@ function NaturalPerformance() {
       <div className="natural-grid container">
         <div className="natural-image-wrap">
           <img
-            src="/hero/how-it-works.webp"
-            alt="TallyTails cat mascot and dog mascot back to back"
+            src="/brand/scenes/scene-stalemate.webp"
+            alt="TallyTails cat and dog mascots sharing popcorn"
             className="natural-image"
             loading="lazy"
             decoding="async"
