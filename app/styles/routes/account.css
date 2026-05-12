@@ -1,0 +1,241 @@
+.account {
+  padding-block: var(--space-12) var(--space-16);
+  max-width: 880px;
+}
+
+@media (max-width: 560px) {
+  .account {
+    padding-block: var(--space-8) var(--space-12);
+  }
+}
+
+.account-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.account-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--ls-tight);
+  margin: 0;
+  line-height: 1;
+}
+
+.account-email {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-fg-muted);
+  margin: 0;
+}
+
+.account-body {
+  font-size: var(--text-base);
+  color: var(--color-fg-muted);
+  line-height: var(--leading-normal);
+  max-width: 60ch;
+  margin: 0 0 var(--space-6);
+}
+
+.account-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-8);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.account-nav a {
+  padding: var(--space-2) var(--space-3);
+  border-radius: 999px;
+  color: var(--color-fg-muted);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+}
+
+.account-nav a:hover {
+  color: var(--color-fg);
+}
+
+.account-nav a.active {
+  background: var(--color-bg-muted, #f6f1e6);
+  color: var(--color-fg);
+}
+
+.account-logout {
+  margin-left: auto;
+}
+
+.account-logout button {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-fg-subtle);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.account-logout button:hover {
+  color: var(--color-fg);
+}
+
+.account-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.account-card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-6);
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.account-card-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  margin: 0;
+  letter-spacing: var(--ls-tight);
+}
+
+.account-card-body {
+  margin: 0;
+  color: var(--color-fg-muted);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+.account-card-note {
+  margin: 0;
+  color: var(--color-fg-subtle);
+  font-size: var(--text-sm);
+}
+
+.account-card-list {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-fg-muted);
+  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.account-discount-code {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.2em;
+  background: var(--color-bg-muted, #f6f1e6);
+  color: var(--color-brand-dark);
+  padding: var(--space-4);
+  border: 1px dashed var(--color-brand-dark);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.account-address {
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-fg);
+  font-size: var(--text-base);
+  font-family: var(--font-sans);
+}
+
+.account-affiliate-link {
+  word-break: break-all;
+  color: var(--color-brand-dark);
+  text-decoration: underline;
+}
+
+.account-orders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.account-orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.account-order {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--color-bg);
+}
+
+.account-order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.account-order-name {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+}
+
+.account-order-date {
+  color: var(--color-fg-subtle);
+  font-size: var(--text-sm);
+  font-family: var(--font-sans);
+}
+
+.account-order-body {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.account-order-status {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-bg-muted, #f6f1e6);
+  color: var(--color-fg-muted);
+  text-transform: capitalize;
+}
+
+.account-order-status.status-paid {
+  color: var(--color-brand-dark);
+}
+
+.account-order-shipping,
+.account-order-total {
+  color: var(--color-fg-muted);
+}
+
+.account-order-track {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-brand-dark);
+  text-decoration: underline;
+}

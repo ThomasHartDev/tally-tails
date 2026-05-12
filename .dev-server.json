@@ -1,0 +1,9 @@
+{
+  "name": "tally-tails",
+  "framework": "hydrogen",
+  "ports": [
+    { "port": 4126, "label": "web", "ui": true, "healthCheck": "/" }
+  ],
+  "install": "npm install --no-audit --no-fund --silent",
+  "dev": "npm run dev -- --port 4126"
+}

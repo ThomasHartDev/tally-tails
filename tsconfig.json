@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["app/*"]
+    },
+    "types": ["@shopify/oxygen-workers-types", "@total-typescript/ts-reset"]
+  },
+  "include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "build", "dist", ".react-router"]
+}
