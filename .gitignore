@@ -11,6 +11,7 @@ customer-accountapi.generated.d.ts
 .env
 .env.local
 HANDOFF.md
+.claude/
 .vinxi/
 .nitro/
 .vercel/

@@ -4,7 +4,7 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "dev": "shopify hydrogen dev --codegen",
+    "dev": "shopify hydrogen dev --codegen --port 4126",
     "build": "shopify hydrogen build --codegen",
     "preview": "shopify hydrogen preview --build",
     "typecheck": "tsc --noEmit",
