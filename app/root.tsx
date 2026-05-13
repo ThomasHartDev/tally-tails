@@ -42,6 +42,7 @@ export const links: LinksFunction = () => [
   // Tokens load before global so cascade order matches the legacy app.
   { rel: "stylesheet", href: tokensCss },
   { rel: "stylesheet", href: globalCss },
+  { rel: "icon", type: "image/webp", href: "/brand/favicon.webp" },
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
 ];
 

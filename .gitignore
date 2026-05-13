@@ -12,6 +12,11 @@ customer-accountapi.generated.d.ts
 .env.local
 HANDOFF.md
 .claude/
+
+# fal.ai-generated brand PNGs. We ship the WebP versions; PNGs are kept
+# locally as the regen source.
+public/brand/**/*.png
+public/brand/*.png
 .vinxi/
 .nitro/
 .vercel/
