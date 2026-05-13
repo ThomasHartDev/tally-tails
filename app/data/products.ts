@@ -28,6 +28,12 @@ export type Product = {
   title: string;
   vendor: string;
   category: Category;
+  // Fine-grained product type within a category. Maps to Shopify's productType
+  // field on the Admin side. Examples: "bed", "toy", "fountain", "harness",
+  // "feeder", "collar", "grooming", "travel", "apparel", "litter", "perch".
+  // Blank string is a valid sentinel for "unclassified" so the dropdown can
+  // still render placeholder products.
+  productType: string;
   description: string;
   details?: string[];
   specs?: ProductSpecs;
@@ -40,6 +46,33 @@ export type Product = {
   variantId?: string;
 };
 
+// Human-readable label for a productType handle. Falls back to a Title-Cased
+// version when we encounter a type we haven't explicitly mapped.
+const PRODUCT_TYPE_LABELS: Record<string, string> = {
+  bed: "Beds",
+  toy: "Toys",
+  fountain: "Fountains",
+  feeder: "Feeders",
+  harness: "Harnesses",
+  collar: "Collars",
+  grooming: "Grooming",
+  travel: "Travel",
+  apparel: "Apparel",
+  litter: "Litter mats",
+  perch: "Perches",
+  furniture: "Furniture",
+  training: "Training",
+};
+
+export function productTypeLabel(type: string): string {
+  if (!type) return "Other";
+  if (PRODUCT_TYPE_LABELS[type]) return PRODUCT_TYPE_LABELS[type];
+  return type
+    .split(/[-_\s]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 // Placeholder catalog. Real SKUs land via Shopify Admin in the catalog-seed
 // pass. These exist only so the dev server renders something coherent.
 export const PRODUCTS: Product[] = [
@@ -48,6 +81,7 @@ export const PRODUCTS: Product[] = [
     title: "Cloud Donut Bed",
     vendor: "TallyTails",
     category: "cat",
+    productType: "bed",
     description: "The orthopedic donut bed your cat will actually sleep in. Raised bolstered rim, vegan fur exterior, removable washable cover.",
     tags: ["cat", "bed"],
     featured: true,
@@ -62,6 +96,7 @@ export const PRODUCTS: Product[] = [
     title: "Ceramic Pebble Fountain",
     vendor: "TallyTails",
     category: "cat",
+    productType: "fountain",
     description: "Filtered drinking fountain in glazed ceramic. Holds 70oz, runs quiet, dishwasher safe.",
     tags: ["cat", "fountain"],
     featured: true,
@@ -76,6 +111,7 @@ export const PRODUCTS: Product[] = [
     title: "Motion-Activated Orb",
     vendor: "TallyTails",
     category: "cat",
+    productType: "toy",
     description: "Self-rolling toy that wakes on motion, runs in 12-minute play sessions, sleeps the rest of the day. USB-C rechargeable.",
     tags: ["cat", "toy"],
     featured: false,
@@ -91,6 +127,7 @@ export const PRODUCTS: Product[] = [
     title: "Orthopedic Memory Bed",
     vendor: "TallyTails",
     category: "dog",
+    productType: "bed",
     description: "Memory foam core sized for medium to large breeds. Bolstered headrest, non-slip base, washable cover.",
     tags: ["dog", "bed"],
     featured: true,
@@ -105,6 +142,7 @@ export const PRODUCTS: Product[] = [
     title: "LED Rechargeable Collar",
     vendor: "TallyTails",
     category: "dog",
+    productType: "collar",
     description: "Rechargeable LED collar with three brightness modes. Visible at 500m. Waterproof, USB-C charging, eight-hour runtime.",
     tags: ["dog", "collar"],
     featured: true,
@@ -119,6 +157,7 @@ export const PRODUCTS: Product[] = [
     title: "No-Pull Padded Harness",
     vendor: "TallyTails",
     category: "dog",
+    productType: "harness",
     description: "Front-clip no-pull harness with padded chest plate. Reflective stitching, four adjustment points, sizes XS through XL.",
     tags: ["dog", "harness"],
     featured: false,
@@ -134,6 +173,7 @@ export const PRODUCTS: Product[] = [
     title: "Tally Starter Bundle",
     vendor: "TallyTails",
     category: "bundles",
+    productType: "bundle",
     description: "One cat-side hero, one dog-side hero. The cheapest way to put both tribes on the board.",
     tags: ["bundle"],
     featured: true,

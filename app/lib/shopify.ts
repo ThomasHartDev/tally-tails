@@ -17,6 +17,7 @@ const PRODUCT_FIELDS = `#graphql
     handle
     title
     vendor
+    productType
     description
     tags
     priceRange {
@@ -49,8 +50,13 @@ const PRODUCT_QUERY = `#graphql
 ` as const;
 
 function deriveCategory(tags: string[]): Category {
-  if (tags.includes('bundle')) return 'bundles';
-  if (tags.includes('dog')) return 'dog';
+  // Tags from the seeded catalog look like ["side:cat", "bed", "hero"] or
+  // ["side:dog", "harness"] or ["bundle"]. Accept the prefixed side tags as
+  // the canonical signal and fall back to bare "cat"/"dog" for forward-compat
+  // with future supplier imports that may not use the side: prefix.
+  if (tags.includes('side:dog') || tags.includes('dog')) return 'dog';
+  if (tags.includes('side:cat') || tags.includes('cat')) return 'cat';
+  if (tags.includes('bundle') || tags.includes('bundles')) return 'bundles';
   return 'cat';
 }
 
@@ -69,6 +75,7 @@ function normalizeProduct(node: any): Product {
     title: node.title,
     vendor: node.vendor,
     category: deriveCategory(tags),
+    productType: node.productType ?? '',
     description: node.description,
     tags,
     featured: tags.includes('featured'),
