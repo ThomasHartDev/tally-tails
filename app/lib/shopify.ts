@@ -37,7 +37,7 @@ const PRODUCT_FIELDS = `#graphql
 const PRODUCTS_QUERY = `#graphql
   ${PRODUCT_FIELDS}
   query Products {
-    products(first: 24) { nodes { ...ProductFields } }
+    products(first: 50) { nodes { ...ProductFields } }
   }
 ` as const;
 
