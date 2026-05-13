@@ -12,7 +12,7 @@ schema, ad scripts, and mascot prompts live in `docs/`.
 
 - **Hydrogen v2** (React Router 7.14)
 - **Shopify** Storefront API + Admin API
-- **Vercel** hosting (project bound to `tallytails.com`)
+- **Shopify Oxygen** hosting (free with the Basic plan, bound to `tallytails.com`)
 - **CJ Dropshipping** + **Printify** for fulfillment
 - **Klaviyo** for email
 - **Meta + TikTok Pixel + Conversions API**, env-gated
