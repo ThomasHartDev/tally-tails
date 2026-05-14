@@ -123,15 +123,39 @@ export function ErrorBoundary() {
     errorMessage = error.message;
   }
 
+  const is404 = errorStatus === 404;
+  const mascot = is404
+    ? "/brand/mascots/cat-shocked.webp"
+    : "/brand/mascots/dog-shocked.webp";
+
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
-      {errorMessage ? (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
-      ) : null}
+    <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-20 text-center">
+      <img
+        src={mascot}
+        alt=""
+        width="200"
+        height="200"
+        className="h-40 w-40 object-contain"
+      />
+      <span className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
+        Error {errorStatus}
+      </span>
+      <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)]">
+        {is404 ? "Page not found" : "Something broke"}
+      </h1>
+      <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+        {is404
+          ? "That URL didn't match anything in the catalog or the journal."
+          : "We're looking at the logs. Try again in a minute."}
+      </p>
+      <a href="/" className="btn-primary mt-6">
+        Back to the score
+      </a>
+      {!is404 && errorMessage && (
+        <pre className="mt-8 max-w-full overflow-x-auto rounded-md bg-[var(--color-surface-2)] p-4 text-left text-xs text-[var(--color-ink-soft)]">
+          {errorMessage}
+        </pre>
+      )}
     </div>
   );
 }

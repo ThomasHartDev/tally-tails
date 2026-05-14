@@ -6,7 +6,6 @@ import {
   safeIsLoggedIn,
 } from "~/lib/customer-account";
 import { brand } from "~/brand";
-import "~/styles/routes/account.css";
 
 export const meta: MetaFunction = () => [
   { title: `Your account | ${brand.name}` },
@@ -59,18 +58,20 @@ export default function AccountLayout() {
 
   if (!configured) {
     return (
-      <div className="account container">
-        <header className="account-head">
-          <span className="eyebrow">Account</span>
-          <h1 className="account-title">Sign-in is on the way</h1>
-        </header>
-        <p className="account-body">
+      <div className="mx-auto max-w-2xl px-4 py-16 md:px-8 md:py-24">
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
+          Account
+        </span>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)] md:text-4xl">
+          Sign-in is on the way
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-[var(--color-ink-soft)]">
           Customer accounts haven't been wired up yet. Once they're enabled
-          you'll be able to sign in with Google or email, track orders,
-          claim member-only discount codes, and share your affiliate link
-          from here.
+          you'll be able to sign in with Google or email, track orders, claim
+          member-only discount codes, and share your affiliate link from
+          here.
         </p>
-        <Link to="/" className="btn btn-primary">
+        <Link to="/" className="btn-primary mt-6 inline-flex">
           Back to shop
         </Link>
       </div>
@@ -79,17 +80,19 @@ export default function AccountLayout() {
 
   if (!isLoggedIn) {
     return (
-      <div className="account container">
-        <header className="account-head">
-          <span className="eyebrow">Account</span>
-          <h1 className="account-title">Sign in</h1>
-        </header>
-        <p className="account-body">
+      <div className="mx-auto max-w-2xl px-4 py-16 md:px-8 md:py-24">
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
+          Account
+        </span>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)] md:text-4xl">
+          Sign in
+        </h1>
+        <p className="mt-4 text-base leading-relaxed text-[var(--color-ink-soft)]">
           Sign in with email or Google to see your orders, track shipping,
-          collect a member discount, and grab your affiliate link. Sign-in
-          is hosted by Shopify so we never see your password.
+          collect a member discount, and grab your affiliate link. Sign-in is
+          hosted by Shopify so we never see your password.
         </p>
-        <Link to="/account/login" className="btn btn-primary">
+        <Link to="/account/login" className="btn-primary mt-6 inline-flex">
           Sign in
         </Link>
       </div>
@@ -99,27 +102,62 @@ export default function AccountLayout() {
   const firstName = customer?.firstName ?? "there";
 
   return (
-    <div className="account container">
-      <header className="account-head">
-        <span className="eyebrow">Account</span>
-        <h1 className="account-title">Hey {firstName}</h1>
-        <p className="account-email">
-          {customer?.emailAddress?.emailAddress}
-        </p>
+    <div className="mx-auto max-w-5xl px-4 py-12 md:px-8 md:py-16">
+      <header>
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
+          Account
+        </span>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)] md:text-4xl">
+          Hey {firstName}
+        </h1>
+        {customer?.emailAddress?.emailAddress && (
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            {customer.emailAddress.emailAddress}
+          </p>
+        )}
       </header>
 
-      <nav className="account-nav" aria-label="Account">
-        <NavLink to="/account" end>
-          Overview
-        </NavLink>
-        <NavLink to="/account/orders">Orders</NavLink>
-        <NavLink to="/account/perks">Perks &amp; referral</NavLink>
-        <Form method="post" action="/account/logout" className="account-logout">
-          <button type="submit">Sign out</button>
+      <nav
+        aria-label="Account"
+        className="mt-8 flex flex-wrap items-center gap-1 border-b border-[var(--color-line)]"
+      >
+        {[
+          { to: "/account", end: true, label: "Overview" },
+          { to: "/account/orders", label: "Orders" },
+          { to: "/account/perks", label: "Perks & referral" },
+        ].map((l) => (
+          <NavLink
+            key={l.to}
+            to={l.to}
+            end={l.end}
+            className={({ isActive }) =>
+              `relative px-4 py-3 text-sm font-medium ${
+                isActive
+                  ? "text-[var(--color-ink)] after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-[var(--color-ink)]"
+                  : "text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
+              }`
+            }
+          >
+            {l.label}
+          </NavLink>
+        ))}
+        <Form
+          method="post"
+          action="/account/logout"
+          className="ml-auto"
+        >
+          <button
+            type="submit"
+            className="px-4 py-3 text-sm font-medium text-[var(--color-ink-mute)] hover:text-[var(--color-ink)]"
+          >
+            Sign out
+          </button>
         </Form>
       </nav>
 
-      <Outlet context={{ customer }} />
+      <div className="mt-8">
+        <Outlet context={{ customer }} />
+      </div>
     </div>
   );
 }

@@ -9,10 +9,10 @@ type Ctx = {
 };
 
 /**
- * Affiliate + perks page. The referral code is derived from the
- * customer's first name + last initial so each customer gets a stable
- * short code. Real attribution belongs in Shopify (Discounts → Affiliate
- * or a third-party app); this page just surfaces the link and copy.
+ * Affiliate + perks page. Referral code derived from name so each
+ * customer gets a stable short code. Real attribution belongs in Shopify
+ * (Discounts → Affiliate or a third-party app); this page just surfaces
+ * the link and copy.
  */
 function referralCode(c: Ctx["customer"]): string {
   if (!c?.firstName) return "BEEFRIEND";
@@ -27,35 +27,48 @@ export default function AccountPerks() {
   const link = `${brand.baseUrl}/?ref=${code}`;
 
   return (
-    <div className="account-overview">
-      <section className="account-card">
-        <h2 className="account-card-title">Your referral link</h2>
-        <p className="account-card-body">
-          Share this link. Friends save 10% on their first order, and you
-          earn a $10 credit toward your next jar for every order placed
-          through it.
+    <div className="grid gap-6 md:grid-cols-2">
+      <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6 md:col-span-2">
+        <h2 className="font-display text-lg font-semibold text-[var(--color-ink)]">
+          Your referral link
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          Share this link. Friends save 10% on their first order, and you earn
+          a $10 credit toward your next jar for every order placed through
+          it.
         </p>
-        <div className="account-discount-code">{code}</div>
-        <p className="account-card-note">
+        <div className="mt-4 rounded-lg bg-[var(--color-ink)] px-4 py-3 font-display text-lg font-bold tracking-[0.12em] text-[var(--color-bg)]">
+          {code}
+        </div>
+        <p className="mt-3 text-xs text-[var(--color-ink-mute)]">
           Direct link:{" "}
-          <a href={link} className="account-affiliate-link">
+          <a
+            href={link}
+            className="text-[var(--color-ink-soft)] underline-offset-2 hover:text-[var(--color-ink)] hover:underline"
+          >
             {link}
           </a>
         </p>
       </section>
 
-      <section className="account-card">
-        <h2 className="account-card-title">Member discount</h2>
-        <p className="account-card-body">
-          MEMBER15 stacks with sale pricing for 15% off any order over
-          $40. One use per checkout.
+      <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+        <h2 className="font-display text-lg font-semibold text-[var(--color-ink)]">
+          Member discount
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          MEMBER15 stacks with sale pricing for 15% off any order over $40.
+          One use per checkout.
         </p>
-        <div className="account-discount-code">MEMBER15</div>
+        <div className="mt-4 rounded-lg bg-[var(--color-ink)] px-4 py-3 font-display text-lg font-bold tracking-[0.12em] text-[var(--color-bg)]">
+          MEMBER15
+        </div>
       </section>
 
-      <section className="account-card">
-        <h2 className="account-card-title">How affiliate payouts work</h2>
-        <ul className="account-card-list">
+      <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6">
+        <h2 className="font-display text-lg font-semibold text-[var(--color-ink)]">
+          How affiliate payouts work
+        </h2>
+        <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
           <li>Credits accrue automatically when a friend checks out.</li>
           <li>Apply credit to any future order, or cash out at $50.</li>
           <li>Payouts ship through your Shopify customer balance.</li>
