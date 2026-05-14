@@ -19,8 +19,13 @@ import { Footer } from "~/components/Footer";
 import { CartDrawer } from "~/components/CartDrawer";
 import { AnalyticsScripts } from "~/components/AnalyticsScripts";
 import { EmailDiscountPopup } from "~/components/EmailDiscountPopup";
-import tokensCss from "~/styles/tokens.css?url";
-import globalCss from "~/styles/global.css?url";
+// Vite ?inline returns the CSS file as a raw string. We embed it directly
+// as a <style> tag in <head>, which dodges the dev-mode bug where Vite
+// serves CSS at the `?url`-resolved path as a JS-wrapped HMR module
+// (Content-Type: text/javascript), so browsers refuse to apply it.
+// Production builds also get correct stylesheets via this path.
+import tokensCss from "~/styles/tokens.css?inline";
+import globalCss from "~/styles/global.css?inline";
 
 export async function loader({ context }: LoaderFunctionArgs) {
   // Expose only the public-safe env vars to the client. Server-only keys
@@ -39,9 +44,9 @@ export function useRootData() {
 }
 
 export const links: LinksFunction = () => [
-  // Tokens load before global so cascade order matches the legacy app.
-  { rel: "stylesheet", href: tokensCss },
-  { rel: "stylesheet", href: globalCss },
+  // Stylesheets are inlined via <style> tags in the Layout below — see
+  // the import comment for the dev-mode reasoning. Only favicons live
+  // in the explicit links() export.
   { rel: "icon", type: "image/webp", href: "/brand/favicon.webp" },
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
 ];
@@ -58,6 +63,14 @@ export function Layout({ children }: { children?: React.ReactNode }) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        <style
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: tokensCss }}
+        />
+        <style
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: globalCss }}
+        />
         <AnalyticsScripts
           nonce={nonce}
           metaPixelId={env?.metaPixelId}
