@@ -24,6 +24,21 @@
   --color-brand-dark: #7a3617;   /* darker rust for AA contrast on cream */
   --color-brand-light: #e89669;  /* lighter rust for hover / accents */
 
+  /* Tribe-coded palettes. Used on the split-screen hero + adaptive surfaces.
+     Cat side reads cool/slate; dog side reads warm/rust. The bg-deep shades
+     are the gradient anchors on each half of the hero; bg shades are the
+     softer surfaces (filter chips, hover states); fg is the on-tribe text
+     colour against the deep gradient. */
+  --color-cat: #5b7c99;          /* slate-blue, cat tribe accent */
+  --color-cat-deep: #2c4257;     /* dark slate-blue, hero gradient anchor */
+  --color-cat-bg: #d8e2ec;       /* pale slate for soft surfaces */
+  --color-cat-fg: #f4f7fa;       /* near-white text on cat-deep */
+
+  --color-dog: #b7572d;          /* warm rust, dog tribe accent */
+  --color-dog-deep: #5a2814;     /* dark rust, hero gradient anchor */
+  --color-dog-bg: #f3dac8;       /* pale rust for soft surfaces */
+  --color-dog-fg: #fbf5ee;       /* near-white text on dog-deep */
+
   --cta-bg: #1a1208;
   --cta-fg: #faf3e0;
   --cta-bg-hover: #000000;

@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import { listProducts } from "~/lib/shopify";
 import { CATEGORY_LABELS, productTypeLabel, type Category } from "~/data/products";
@@ -77,48 +77,109 @@ export default function HomePage() {
 
   return (
     <>
-      <Hero />
+      <SplitHero />
       <BenefitsBanner />
-      <NaturalPerformance />
       <Catalog products={products} />
       <FinalCta />
     </>
   );
 }
 
-function Hero() {
+// Hard-coded leaderboard values until the KV / metafield store ships
+// (action #8 in HANDOFF.md). The structure here is what the loader will
+// hand back once we have a real backend so the markup doesn't need a
+// rewrite — only the source of the numbers changes.
+const TALLY = { cat: 4217, dog: 3891 };
+
+function SplitHero() {
+  const lead = Math.abs(TALLY.cat - TALLY.dog);
+  const leader: "cat" | "dog" | null =
+    TALLY.cat > TALLY.dog ? "cat" : TALLY.dog > TALLY.cat ? "dog" : null;
+
   return (
-    <section className="hero">
-      <img
-        className="hero-image"
-        src="/brand/scenes/scene-close-race.webp"
-        alt="TallyTails cat and dog mascots in a tug of war"
-        fetchPriority="high"
-        decoding="async"
-        width="2000"
-        height="1200"
-      />
-      <div className="hero-overlay" aria-hidden="true" />
-      <div className="hero-content container">
-        <h1 className="hero-title">
-          Cat or dog. <em>Pick your side.</em>
-        </h1>
-        <p className="hero-sub">
-          Every order tips a running tally between the two tribes. Cat side
-          products. Dog side products. One ongoing score. The leaderboard
-          updates the moment you check out.
-        </p>
-        <div className="hero-actions">
-          <a href="#catalog" className="btn btn-primary hero-cta">
-            Shop the cat side
-          </a>
-          <a
-            href="#catalog"
-            className="btn btn-outline hero-cta-secondary"
-          >
-            Shop the dog side
-          </a>
-        </div>
+    <section className="split-hero" aria-labelledby="split-hero-title">
+      <h1 id="split-hero-title" className="sr-only">
+        Cat side versus dog side. Pick your tribe and start tipping the
+        leaderboard.
+      </h1>
+
+      <div className="tally-bar" aria-label="Current cat vs dog leaderboard">
+        <span className="tally-label">This week</span>
+        <span className="tally-side tally-side-cat">
+          <span className="tally-side-name">Cat</span>
+          <span className="tally-side-count">{TALLY.cat.toLocaleString()}</span>
+        </span>
+        <span className="tally-sep" aria-hidden="true">vs</span>
+        <span className="tally-side tally-side-dog">
+          <span className="tally-side-name">Dog</span>
+          <span className="tally-side-count">{TALLY.dog.toLocaleString()}</span>
+        </span>
+        {leader && (
+          <span className={`tally-lead tally-lead-${leader}`}>
+            {leader === "cat" ? "Cats" : "Dogs"} up by {lead.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      <div className="split-grid">
+        <Link
+          to="/?side=cat#catalog"
+          className="split-side split-side-cat"
+          aria-label={`Shop the cat side. Currently ${TALLY.cat.toLocaleString()} points.`}
+        >
+          <div className="split-mascot-wrap">
+            <img
+              src="/brand/mascots/cat-side-eye.webp"
+              alt=""
+              className="split-mascot"
+              fetchPriority="high"
+              decoding="async"
+              width="600"
+              height="600"
+            />
+          </div>
+          <div className="split-content">
+            <span className="split-eyebrow">Cat Side</span>
+            <h2 className="split-title">
+              The cats are <em>{leader === "cat" ? "winning" : leader === "dog" ? "losing" : "tied"}</em>.
+            </h2>
+            <p className="split-copy">
+              Beds, fountains, toys, climbers, grooming. Every cat-side
+              order pushes the tally up.
+            </p>
+            <span className="split-cta">Shop cat side →</span>
+          </div>
+        </Link>
+
+        <div className="split-divider" aria-hidden="true" />
+
+        <Link
+          to="/?side=dog#catalog"
+          className="split-side split-side-dog"
+          aria-label={`Shop the dog side. Currently ${TALLY.dog.toLocaleString()} points.`}
+        >
+          <div className="split-mascot-wrap">
+            <img
+              src="/brand/mascots/dog-idle.webp"
+              alt=""
+              className="split-mascot"
+              decoding="async"
+              width="600"
+              height="600"
+            />
+          </div>
+          <div className="split-content">
+            <span className="split-eyebrow">Dog Side</span>
+            <h2 className="split-title">
+              The dogs are <em>{leader === "dog" ? "winning" : leader === "cat" ? "losing" : "tied"}</em>.
+            </h2>
+            <p className="split-copy">
+              Beds, harnesses, collars, feeders, training gear. Every
+              dog-side order pushes the tally up.
+            </p>
+            <span className="split-cta">Shop dog side →</span>
+          </div>
+        </Link>
       </div>
     </section>
   );
@@ -212,46 +273,6 @@ function BenefitsBanner() {
   );
 }
 
-function NaturalPerformance() {
-  return (
-    <section className="natural">
-      <div className="natural-grid container">
-        <div className="natural-image-wrap">
-          <img
-            src="/brand/scenes/scene-stalemate.webp"
-            alt="TallyTails cat and dog mascots sharing popcorn"
-            className="natural-image"
-            loading="lazy"
-            decoding="async"
-            width="800"
-            height="1000"
-          />
-        </div>
-        <div className="natural-copy">
-          <span className="eyebrow">How the tally works</span>
-          <h2 className="natural-title">
-            One storefront, two tribes, an ongoing score.
-          </h2>
-          <p className="natural-prose">
-            Every order ticks the counter on the side you bought from. Cat
-            purchases push the cat score up. Dog purchases push the dog score
-            up. The site reads the score every page load. The popup, the
-            palette, and the homepage all lean toward whoever is winning that
-            week.
-          </p>
-          <p className="natural-prose">
-            The score resets every Sunday at midnight. The leaderboard week is
-            a fresh fight every week. Buy what you actually need for your
-            pet, but know that the order is also a vote.
-          </p>
-          <a href="#catalog" className="btn btn-primary natural-cta">
-            Browse all products
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "name";
 
@@ -271,10 +292,30 @@ const CATEGORY_FILTERS: Array<{ value: "all" | Category; label: string }> = [
 
 function Catalog({ products }: { products: Awaited<ReturnType<typeof listProducts>> }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [category, setCategory] = useState<"all" | Category>("all");
+  // Seed initial filter state from the URL on mount. The split-screen hero
+  // navigates to "/?side=cat#catalog" / "/?side=dog#catalog" so picking a
+  // tribe from the hero scrolls + pre-filters the grid in one click.
+  const [searchParams] = useSearchParams();
+  const sideParam = searchParams.get("side");
+  const initialCategory: "all" | Category =
+    sideParam === "cat" || sideParam === "dog" || sideParam === "bundles"
+      ? (sideParam as Category)
+      : "all";
+  const [category, setCategory] = useState<"all" | Category>(initialCategory);
   const [productType, setProductType] = useState<string>("");
   const [onSaleOnly, setOnSaleOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("featured");
+
+  // Re-sync the filter when the URL changes (hero CTAs navigate to "/" with
+  // a fresh ?side=, this picks that up without a full reload feeling).
+  useEffect(() => {
+    if (sideParam === "cat" || sideParam === "dog" || sideParam === "bundles") {
+      setCategory(sideParam as Category);
+      setProductType("");
+    }
+    // Intentionally not depending on category/productType so user manual
+    // changes don't get clobbered by stale URL state.
+  }, [sideParam]);
 
   // Build the grouped dropdown options from the live catalog. Each leaf option
   // encodes "<category>:<productType>" so a single selection sets both filters.

@@ -1,4 +1,278 @@
-/* Hero */
+/* ============================================================
+ * Split-screen hero. Two halves, cat side cool slate + dog side
+ * warm rust, divided by a thin vertical rule. Tally bar across
+ * the top shows the running leaderboard. Whole hero is the
+ * brand statement.
+ * ============================================================ */
+.split-hero {
+  margin-top: -72px;       /* tuck under the fixed header */
+  padding-top: 72px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-fg); /* dark backdrop bleeds through any gap */
+  color: var(--color-bg);
+}
+
+.tally-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(250, 243, 224, 0.1);
+}
+
+.tally-label {
+  font-weight: var(--weight-medium);
+  color: rgba(250, 243, 224, 0.55);
+}
+
+.tally-side {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  letter-spacing: 0.08em;
+}
+
+.tally-side-name {
+  font-weight: var(--weight-medium);
+  color: rgba(250, 243, 224, 0.7);
+}
+
+.tally-side-cat .tally-side-name { color: var(--color-cat); }
+.tally-side-dog .tally-side-name { color: var(--color-dog-bg); }
+
+.tally-side-count {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-bg);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tally-sep {
+  color: rgba(250, 243, 224, 0.35);
+  font-weight: var(--weight-medium);
+}
+
+.tally-lead {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+}
+
+.tally-lead-cat {
+  background: var(--color-cat-deep);
+  color: var(--color-cat-fg);
+}
+
+.tally-lead-dog {
+  background: var(--color-dog-deep);
+  color: var(--color-dog-fg);
+}
+
+.split-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  min-height: calc(100vh - 72px - 60px); /* viewport minus header + tally bar */
+}
+
+.split-side {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-12) var(--space-12) var(--space-16);
+  color: var(--color-bg);
+  text-decoration: none;
+  overflow: hidden;
+  transition: filter var(--duration-normal) var(--ease-out);
+}
+
+.split-side-cat {
+  background: radial-gradient(
+    ellipse 80% 60% at 30% 30%,
+    var(--color-cat) 0%,
+    var(--color-cat-deep) 60%,
+    var(--color-fg) 100%
+  );
+  color: var(--color-cat-fg);
+}
+
+.split-side-dog {
+  background: radial-gradient(
+    ellipse 80% 60% at 70% 30%,
+    var(--color-dog) 0%,
+    var(--color-dog-deep) 60%,
+    var(--color-fg) 100%
+  );
+  color: var(--color-dog-fg);
+}
+
+.split-side:hover {
+  filter: brightness(1.08);
+}
+
+.split-side:focus-visible {
+  outline: 3px solid var(--color-bg);
+  outline-offset: -3px;
+}
+
+.split-divider {
+  width: 1px;
+  background: rgba(250, 243, 224, 0.18);
+}
+
+.split-mascot-wrap {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
+}
+
+.split-side-cat .split-mascot-wrap {
+  right: var(--space-8);
+  top: 8%;
+  transform: none;
+}
+
+.split-side-dog .split-mascot-wrap {
+  left: var(--space-8);
+  top: 8%;
+  transform: none;
+}
+
+.split-mascot {
+  display: block;
+  width: clamp(220px, 32vw, 460px);
+  height: auto;
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.split-side:hover .split-mascot {
+  transform: scale(1.04) rotate(-1deg);
+}
+
+.split-side-dog:hover .split-mascot {
+  transform: scale(1.04) rotate(1deg);
+}
+
+.split-content {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+}
+
+.split-eyebrow {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  opacity: 0.85;
+  margin-bottom: var(--space-5);
+}
+
+.split-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.2vw, var(--text-4xl));
+  font-weight: var(--weight-semibold);
+  line-height: 1.05;
+  letter-spacing: var(--ls-tight);
+  margin: 0 0 var(--space-4);
+  color: inherit;
+}
+
+.split-title em {
+  font-style: italic;
+  font-weight: var(--weight-semibold);
+}
+
+.split-side-cat .split-title em { color: var(--color-cat-bg); }
+.split-side-dog .split-title em { color: var(--color-dog-bg); }
+
+.split-copy {
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  margin: 0 0 var(--space-8);
+  opacity: 0.92;
+  max-width: 38ch;
+}
+
+.split-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 14px 28px;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.split-side:hover .split-cta {
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .split-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .split-divider {
+    width: 100%;
+    height: 1px;
+  }
+  .split-side {
+    min-height: 70vh;
+    padding: var(--space-10) var(--space-6);
+  }
+  .split-side-cat .split-mascot-wrap,
+  .split-side-dog .split-mascot-wrap {
+    right: var(--space-4);
+    left: auto;
+    top: var(--space-4);
+  }
+  .split-mascot {
+    width: clamp(160px, 38vw, 260px);
+  }
+  .tally-bar {
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+  .tally-side-count {
+    font-size: var(--text-xl);
+  }
+}
+
+/* ============================================================
+ * Legacy hero classes below this point are unused after the
+ * split-hero replaced the old single-image hero. Kept temporarily
+ * to avoid breaking any in-flight previews; safe to delete in a
+ * follow-up sweep.
+ * ============================================================ */
+
 .hero {
   position: relative;
   min-height: 92vh;
