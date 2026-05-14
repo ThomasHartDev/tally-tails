@@ -1,5 +1,4 @@
 import { CART_TIERS, computeTierProgress } from "~/lib/cart-tiers";
-import "./CartProgressBar.css";
 
 export function CartProgressBar({ subtotal }: { subtotal: number }) {
   const { fillPct, current, next, remaining } = computeTierProgress(subtotal);

@@ -1,7 +1,6 @@
 import { useId, useState } from "react";
 import { addUserReview, type ReviewDraft } from "~/lib/user-reviews";
 import type { Review } from "~/data/reviews";
-import "./ReviewForm.css";
 
 export function ReviewForm({
   handle,

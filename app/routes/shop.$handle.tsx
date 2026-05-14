@@ -11,7 +11,6 @@ import { ReviewForm } from "~/components/ReviewForm";
 import { useCart } from "~/lib/cart-context";
 import { brand } from "~/brand";
 import { breadcrumbList, useJsonLd, useSeo } from "~/lib/seo";
-import "~/styles/routes/shop.$handle.css";
 
 export async function loader({ context, params }: LoaderFunctionArgs) {
   const product = await getProduct(

@@ -2,7 +2,6 @@ import type { MetaFunction } from "react-router";
 import { Link } from "react-router";
 import { brand } from "~/brand";
 import { breadcrumbList, useJsonLd, useSeo } from "~/lib/seo";
-import "~/styles/routes/blog.css";
 
 type Post = {
   slug: string;

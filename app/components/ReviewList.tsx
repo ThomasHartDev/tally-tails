@@ -1,6 +1,5 @@
 import { Stars } from "./Stars";
 import type { Review } from "~/data/reviews";
-import "./ReviewList.css";
 
 export function ReviewList({ reviews }: { reviews: Review[] }) {
   if (reviews.length === 0) {

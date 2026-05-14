@@ -4,7 +4,6 @@ import {
   klaviyoSubscribe,
   metaPixel,
 } from "~/lib/analytics";
-import "./EmailDiscountPopup.css";
 
 const COOKIE = "bh_email_popup";
 const COOKIE_DAYS = 30;

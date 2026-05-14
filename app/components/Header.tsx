@@ -1,7 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router";
 import { useEffect, useState } from "react";
 import { useCart } from "~/lib/cart-context";
-import "./Header.css";
 
 // Routes whose top viewport is a dark photo hero. On those, the nav text
 // needs to flip light at scroll-zero so it's readable over the photo.

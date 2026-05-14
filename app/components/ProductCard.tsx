@@ -4,7 +4,6 @@ import { getReviewSummary } from "~/data/reviews";
 import { useCart } from "~/lib/cart-context";
 import { metaPixel, klaviyoEvents } from "~/lib/analytics";
 import { Stars } from "./Stars";
-import "./ProductCard.css";
 
 export function ProductCard({
   product,

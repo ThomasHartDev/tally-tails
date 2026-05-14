@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import "./Footer.css";
 
 export function Footer() {
   return (

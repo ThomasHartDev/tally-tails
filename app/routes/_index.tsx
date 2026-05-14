@@ -6,10 +6,6 @@ import { CATEGORY_LABELS, productTypeLabel, type Category } from "~/data/product
 import { ProductCard } from "~/components/ProductCard";
 import { brand } from "~/brand";
 import { useJsonLd, useSeo } from "~/lib/seo";
-// Vite ?inline returns the file content as a raw string. Inlined as a style
-// tag below to dodge the dev-mode bug where Vite serves CSS at side-effect
-// import paths as JS modules. See root.tsx for the longer note.
-import indexCss from "~/styles/routes/_index.css?inline";
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const products = await listProducts(
@@ -80,10 +76,6 @@ export default function HomePage() {
 
   return (
     <>
-      <style
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: indexCss }}
-      />
       <SplitHero />
       <BenefitsBanner />
       <Catalog products={products} />

@@ -19,13 +19,49 @@ import { Footer } from "~/components/Footer";
 import { CartDrawer } from "~/components/CartDrawer";
 import { AnalyticsScripts } from "~/components/AnalyticsScripts";
 import { EmailDiscountPopup } from "~/components/EmailDiscountPopup";
-// Vite ?inline returns the CSS file as a raw string. We embed it directly
-// as a <style> tag in <head>, which dodges the dev-mode bug where Vite
-// serves CSS at the `?url`-resolved path as a JS-wrapped HMR module
-// (Content-Type: text/javascript), so browsers refuse to apply it.
-// Production builds also get correct stylesheets via this path.
+// All CSS is centralized here as ?inline imports and embedded as a single
+// <style> tag in <head>. This dodges the dev-mode Vite bug where CSS at
+// the `?url` or side-effect import path serves as a JS module instead of
+// text/css (see memory/feedback_vite_css_mime_in_dev.md). Order matters
+// for the cascade: tokens first, then global, then layout-level routes,
+// then per-component. Each component CSS used to be imported in its own
+// .tsx file with `import "./Foo.css"`; those imports are removed because
+// they silently fail under the bug. Centralizing here keeps a single
+// place to update if the upstream Vite/Hydrogen integration fixes the
+// MIME issue.
 import tokensCss from "~/styles/tokens.css?inline";
 import globalCss from "~/styles/global.css?inline";
+import indexRouteCss from "~/styles/routes/_index.css?inline";
+import accountRouteCss from "~/styles/routes/account.css?inline";
+import blogRouteCss from "~/styles/routes/blog.css?inline";
+import shopHandleRouteCss from "~/styles/routes/shop.$handle.css?inline";
+import headerCss from "~/components/Header.css?inline";
+import footerCss from "~/components/Footer.css?inline";
+import productCardCss from "~/components/ProductCard.css?inline";
+import cartDrawerCss from "~/components/CartDrawer.css?inline";
+import cartProgressBarCss from "~/components/CartProgressBar.css?inline";
+import emailDiscountPopupCss from "~/components/EmailDiscountPopup.css?inline";
+import reviewFormCss from "~/components/ReviewForm.css?inline";
+import reviewListCss from "~/components/ReviewList.css?inline";
+import starsCss from "~/components/Stars.css?inline";
+
+const ALL_CSS = [
+  tokensCss,
+  globalCss,
+  indexRouteCss,
+  accountRouteCss,
+  blogRouteCss,
+  shopHandleRouteCss,
+  headerCss,
+  footerCss,
+  productCardCss,
+  cartDrawerCss,
+  cartProgressBarCss,
+  emailDiscountPopupCss,
+  reviewFormCss,
+  reviewListCss,
+  starsCss,
+].join("\n");
 
 export async function loader({ context }: LoaderFunctionArgs) {
   // Expose only the public-safe env vars to the client. Server-only keys
@@ -65,11 +101,7 @@ export function Layout({ children }: { children?: React.ReactNode }) {
         <Links />
         <style
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: tokensCss }}
-        />
-        <style
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: globalCss }}
+          dangerouslySetInnerHTML={{ __html: ALL_CSS }}
         />
         <AnalyticsScripts
           nonce={nonce}

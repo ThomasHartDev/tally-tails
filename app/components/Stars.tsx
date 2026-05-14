@@ -1,4 +1,3 @@
-import "./Stars.css";
 
 /**
  * Compact star rating display. Filled stars + half-star precision.

@@ -3,7 +3,6 @@ import { useFetcher } from "react-router";
 import { useCart } from "~/lib/cart-context";
 import { metaPixel } from "~/lib/analytics";
 import { CartProgressBar } from "./CartProgressBar";
-import "./CartDrawer.css";
 
 export function CartDrawer() {
   const cart = useCart();

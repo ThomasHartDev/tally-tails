@@ -6,7 +6,6 @@ import {
   safeIsLoggedIn,
 } from "~/lib/customer-account";
 import { brand } from "~/brand";
-import "~/styles/routes/account.css";
 
 export const meta: MetaFunction = () => [
   { title: `Your account | ${brand.name}` },
