@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { Link, useLoaderData } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import { listProducts } from "~/lib/shopify";
-import { CATEGORY_LABELS, type Category } from "~/data/products";
+import { CATEGORY_LABELS, productTypeLabel, type Category } from "~/data/products";
 import { ProductCard } from "~/components/ProductCard";
 import { brand } from "~/brand";
 import { useJsonLd, useSeo } from "~/lib/seo";
@@ -272,12 +272,34 @@ const CATEGORY_FILTERS: Array<{ value: "all" | Category; label: string }> = [
 function Catalog({ products }: { products: Awaited<ReturnType<typeof listProducts>> }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [category, setCategory] = useState<"all" | Category>("all");
+  const [productType, setProductType] = useState<string>("");
   const [onSaleOnly, setOnSaleOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("featured");
+
+  // Build the grouped dropdown options from the live catalog. Each leaf option
+  // encodes "<category>:<productType>" so a single selection sets both filters.
+  // When the supplier-bulk import grows the catalog from 30 to 1000+ SKUs the
+  // optgroup list rebuilds automatically.
+  const typeOptions = useMemo(() => {
+    const byCategory: Record<Category, Set<string>> = {
+      cat: new Set(),
+      dog: new Set(),
+      bundles: new Set(),
+    };
+    for (const p of products) {
+      if (p.productType) byCategory[p.category].add(p.productType);
+    }
+    return (Object.keys(byCategory) as Category[]).map((cat) => ({
+      category: cat,
+      categoryLabel: CATEGORY_LABELS[cat],
+      types: [...byCategory[cat]].sort(),
+    }));
+  }, [products]);
 
   const visible = useMemo(() => {
     let out = products.filter((p) => {
       if (category !== "all" && p.category !== category) return false;
+      if (productType && p.productType !== productType) return false;
       if (onSaleOnly && !p.onSale) return false;
       return true;
     });
@@ -295,17 +317,38 @@ function Catalog({ products }: { products: Awaited<ReturnType<typeof listProduct
       out = [...out].sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return out;
-  }, [products, category, onSaleOnly, sort]);
+  }, [products, category, productType, onSaleOnly, sort]);
 
   const activeFilterCount =
     (category !== "all" ? 1 : 0) +
+    (productType ? 1 : 0) +
     (onSaleOnly ? 1 : 0) +
     (sort !== "featured" ? 1 : 0);
 
   const reset = () => {
     setCategory("all");
+    setProductType("");
     setOnSaleOnly(false);
     setSort("featured");
+  };
+
+  // The dropdown value encodes both axes: "all" | "<category>" | "<category>:<type>".
+  const dropdownValue =
+    category === "all"
+      ? "all"
+      : productType
+        ? `${category}:${productType}`
+        : category;
+
+  const onDropdownChange = (value: string) => {
+    if (value === "all") {
+      setCategory("all");
+      setProductType("");
+      return;
+    }
+    const [cat, type] = value.split(":");
+    setCategory(cat as Category);
+    setProductType(type ?? "");
   };
 
   return (
@@ -323,6 +366,33 @@ function Catalog({ products }: { products: Awaited<ReturnType<typeof listProduct
             </p>
           </div>
           <div className="catalog-controls">
+            <label className="catalog-quickpick">
+              <span className="sr-only">Browse category</span>
+              <select
+                className="catalog-quickpick-select"
+                value={dropdownValue}
+                onChange={(e) => {
+                  onDropdownChange(e.target.value);
+                  const el = document.getElementById("catalog");
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                aria-label="Browse by category"
+              >
+                <option value="all">Browse all categories</option>
+                {typeOptions
+                  .filter((g) => g.types.length > 0)
+                  .map((g) => (
+                    <optgroup key={g.category} label={g.categoryLabel}>
+                      <option value={g.category}>All {g.categoryLabel.toLowerCase()}</option>
+                      {g.types.map((t) => (
+                        <option key={t} value={`${g.category}:${t}`}>
+                          {productTypeLabel(t)}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+              </select>
+            </label>
             <button
               type="button"
               className="btn btn-outline catalog-filter-btn"
@@ -360,10 +430,12 @@ function Catalog({ products }: { products: Awaited<ReturnType<typeof listProduct
         {activeFilterCount > 0 && (
           <ActiveFilters
             category={category}
+            productType={productType}
             onSaleOnly={onSaleOnly}
             sort={sort}
             onClear={reset}
             onClearCategory={() => setCategory("all")}
+            onClearProductType={() => setProductType("")}
             onClearSale={() => setOnSaleOnly(false)}
             onClearSort={() => setSort("featured")}
           />
@@ -406,18 +478,22 @@ function Catalog({ products }: { products: Awaited<ReturnType<typeof listProduct
 
 function ActiveFilters({
   category,
+  productType,
   onSaleOnly,
   sort,
   onClear,
   onClearCategory,
+  onClearProductType,
   onClearSale,
   onClearSort,
 }: {
   category: "all" | Category;
+  productType: string;
   onSaleOnly: boolean;
   sort: SortKey;
   onClear: () => void;
   onClearCategory: () => void;
+  onClearProductType: () => void;
   onClearSale: () => void;
   onClearSort: () => void;
 }) {
@@ -427,6 +503,12 @@ function ActiveFilters({
         <ActiveFilterChip
           label={CATEGORY_LABELS[category]}
           onRemove={onClearCategory}
+        />
+      )}
+      {productType && (
+        <ActiveFilterChip
+          label={productTypeLabel(productType)}
+          onRemove={onClearProductType}
         />
       )}
       {onSaleOnly && (
