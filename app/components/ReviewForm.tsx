@@ -1,7 +1,6 @@
 import { useId, useState } from "react";
 import { addUserReview, type ReviewDraft } from "~/lib/user-reviews";
 import type { Review } from "~/data/reviews";
-import "./ReviewForm.css";
 
 export function ReviewForm({
   handle,
@@ -64,17 +63,28 @@ export function ReviewForm({
 
   const ratingShown = hoverRating ?? rating;
 
-  return (
-    <form className="review-form" onSubmit={handleSubmit} noValidate>
-      <h3 className="review-form-title">Write a review</h3>
+  const inputClass =
+    "w-full rounded-md border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-mute)] focus:border-[var(--color-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/30";
 
-      <div className="review-form-field">
-        <span className="review-form-label">Rating</span>
+  return (
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="mt-8 rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6"
+    >
+      <h3 className="font-display text-lg font-semibold text-[var(--color-ink)]">
+        Write a review
+      </h3>
+
+      <div className="mt-4">
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+          Rating
+        </span>
         <div
-          className="review-form-rating"
           role="radiogroup"
           aria-label="Rating"
           onMouseLeave={() => setHoverRating(null)}
+          className="mt-2 flex gap-1 text-2xl"
         >
           {([1, 2, 3, 4, 5] as const).map((n) => (
             <button
@@ -83,11 +93,15 @@ export function ReviewForm({
               role="radio"
               aria-checked={rating === n}
               aria-label={`${n} ${n === 1 ? "star" : "stars"}`}
-              className={`review-form-star ${ratingShown >= n ? "is-filled" : ""}`}
               onClick={() => setRating(n)}
               onMouseEnter={() => setHoverRating(n)}
               onFocus={() => setHoverRating(n)}
               onBlur={() => setHoverRating(null)}
+              className={`transition-colors ${
+                ratingShown >= n
+                  ? "text-[#f4b740]"
+                  : "text-[var(--color-line)]"
+              }`}
             >
               ★
             </button>
@@ -95,9 +109,11 @@ export function ReviewForm({
         </div>
       </div>
 
-      <div className="review-form-row">
-        <label className="review-form-field">
-          <span className="review-form-label">Name</span>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+            Name
+          </span>
           <input
             id={`${baseId}-author`}
             type="text"
@@ -106,22 +122,28 @@ export function ReviewForm({
             placeholder="First name L."
             autoComplete="name"
             required
+            className={`mt-1 ${inputClass}`}
           />
         </label>
-        <label className="review-form-field">
-          <span className="review-form-label">Location (optional)</span>
+        <label className="block">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+            Location (optional)
+          </span>
           <input
             id={`${baseId}-location`}
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="City, ST"
+            className={`mt-1 ${inputClass}`}
           />
         </label>
       </div>
 
-      <label className="review-form-field">
-        <span className="review-form-label">Title</span>
+      <label className="mt-3 block">
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+          Title
+        </span>
         <input
           id={`${baseId}-title`}
           type="text"
@@ -130,11 +152,14 @@ export function ReviewForm({
           placeholder="What stood out"
           maxLength={80}
           required
+          className={`mt-1 ${inputClass}`}
         />
       </label>
 
-      <label className="review-form-field">
-        <span className="review-form-label">Review</span>
+      <label className="mt-3 block">
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+          Review
+        </span>
         <textarea
           id={`${baseId}-body`}
           value={body}
@@ -143,25 +168,32 @@ export function ReviewForm({
           rows={4}
           maxLength={1200}
           required
+          className={`mt-1 ${inputClass}`}
         />
       </label>
 
-      {error && <p className="review-form-error" role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-3 text-sm text-[#b3261e]">
+          {error}
+        </p>
+      )}
 
-      <div className="review-form-actions">
+      <div className="mt-4 flex items-center gap-3">
         <button
           type="submit"
-          className="btn btn-primary"
           disabled={status === "submitting"}
+          className="btn-primary"
         >
           {status === "submitting" ? "Posting…" : "Post review"}
         </button>
         {status === "done" && (
-          <span className="review-form-success">Thanks. Your review is live.</span>
+          <span className="text-sm font-medium text-[var(--color-ink-soft)]">
+            Thanks. Your review is live.
+          </span>
         )}
       </div>
 
-      <p className="review-form-note">
+      <p className="mt-3 text-xs text-[var(--color-ink-mute)]">
         Reviews are saved locally on this device. Portfolio demo, no server
         moderation.
       </p>

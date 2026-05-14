@@ -3,7 +3,6 @@ import { useFetcher } from "react-router";
 import { useCart } from "~/lib/cart-context";
 import { metaPixel } from "~/lib/analytics";
 import { CartProgressBar } from "./CartProgressBar";
-import "./CartDrawer.css";
 
 export function CartDrawer() {
   const cart = useCart();
@@ -16,33 +15,34 @@ export function CartDrawer() {
   return (
     <>
       <div
-        className={`cart-backdrop ${cart.isOpen ? "is-open" : ""}`}
         onClick={cart.close}
         aria-hidden={!cart.isOpen}
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity ${
+          cart.isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
       />
       <aside
-        className={`cart-drawer ${cart.isOpen ? "is-open" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label="Cart"
         {...(!cart.isOpen ? { inert: "" } : {})}
+        className={`fixed right-0 top-0 z-50 flex h-[100dvh] w-full max-w-md flex-col bg-[var(--color-bg)] shadow-2xl transition-transform duration-300 ${
+          cart.isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-        <header className="cart-drawer-head">
-          <span className="cart-drawer-eyebrow">Cart</span>
+        <header className="flex items-center justify-between border-b border-[var(--color-line)] px-5 py-4">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-soft)]">
+            Cart
+          </span>
           <button
             ref={closeRef}
             type="button"
-            className="cart-drawer-close"
             onClick={cart.close}
             aria-label="Close cart"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-ink)] hover:bg-[var(--color-surface-2)]"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M6 6l12 12M18 6L6 18"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </button>
         </header>
@@ -57,10 +57,19 @@ function CartView() {
   const cart = useCart();
   if (cart.lines.length === 0) {
     return (
-      <div className="cart-drawer-body cart-empty">
-        <p className="cart-empty-headline">Nothing in the cart yet.</p>
-        <p className="cart-empty-sub">
-          Add a jar from the shop and it'll show up here.
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+        <img
+          src="/brand/mascots/cat-sulking.webp"
+          alt=""
+          width="160"
+          height="160"
+          className="mb-6 h-40 w-40 opacity-90"
+        />
+        <p className="font-display text-xl font-semibold text-[var(--color-ink)]">
+          Nothing in the cart yet.
+        </p>
+        <p className="mt-2 max-w-xs text-sm text-[var(--color-ink-soft)]">
+          Pick a side. Cat or dog. Either way the tally tips a notch.
         </p>
       </div>
     );
@@ -68,47 +77,55 @@ function CartView() {
   return (
     <>
       <CartProgressBar subtotal={cart.subtotal} />
-      <ul className="cart-lines">
+      <ul className="flex-1 divide-y divide-[var(--color-line)] overflow-y-auto px-5">
         {cart.lines.map((line) => (
-          <li key={line.handle} className="cart-line">
-            <div className="cart-line-image">
-              {line.image && <img src={line.image.url} alt={line.image.alt} />}
+          <li key={line.handle} className="flex gap-4 py-4">
+            <div className="h-20 w-20 flex-none overflow-hidden rounded-md bg-[var(--color-surface-2)]">
+              {line.image && (
+                <img
+                  src={line.image.url}
+                  alt={line.image.alt}
+                  className="h-full w-full object-cover"
+                />
+              )}
             </div>
-            <div className="cart-line-body">
-              <span className="cart-line-vendor">{line.vendor}</span>
-              <span className="cart-line-title">{line.title}</span>
-              <div className="cart-line-row">
-                <div className="cart-qty">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-mute)]">
+                {line.vendor}
+              </span>
+              <span className="truncate font-display text-sm font-semibold text-[var(--color-ink)]">
+                {line.title}
+              </span>
+              <div className="mt-2 flex items-center justify-between">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-1 py-0.5">
                   <button
                     type="button"
-                    onClick={() =>
-                      cart.setQuantity(line.handle, line.quantity - 1)
-                    }
+                    className="cart-qty-btn"
+                    onClick={() => cart.setQuantity(line.handle, line.quantity - 1)}
                     aria-label={`Decrease ${line.title} quantity`}
                   >
                     −
                   </button>
-                  <span aria-label={`Quantity ${line.quantity}`}>
+                  <span aria-label={`Quantity ${line.quantity}`} className="min-w-[20px] text-center text-sm tabular-nums">
                     {line.quantity}
                   </span>
                   <button
                     type="button"
-                    onClick={() =>
-                      cart.setQuantity(line.handle, line.quantity + 1)
-                    }
+                    className="cart-qty-btn"
+                    onClick={() => cart.setQuantity(line.handle, line.quantity + 1)}
                     aria-label={`Increase ${line.title} quantity`}
                   >
                     +
                   </button>
                 </div>
-                <span className="cart-line-price">
+                <span className="font-display text-sm font-semibold tabular-nums text-[var(--color-ink)]">
                   ${(line.unitPrice * line.quantity).toFixed(2)}
                 </span>
               </div>
               <button
                 type="button"
-                className="cart-line-remove"
                 onClick={() => cart.removeItem(line.handle)}
+                className="mt-1.5 self-start text-xs text-[var(--color-ink-mute)] underline-offset-2 hover:text-[var(--color-ink)] hover:underline"
               >
                 Remove
               </button>
@@ -116,12 +133,12 @@ function CartView() {
           </li>
         ))}
       </ul>
-      <footer className="cart-drawer-foot">
-        <div className="cart-totals">
+      <footer className="border-t border-[var(--color-line)] px-5 py-5">
+        <div className="flex items-baseline justify-between font-display text-lg font-semibold text-[var(--color-ink)]">
           <span>Subtotal</span>
-          <span>${cart.subtotal.toFixed(2)}</span>
+          <span className="tabular-nums">${cart.subtotal.toFixed(2)}</span>
         </div>
-        <p className="cart-shipping-note">
+        <p className="mt-1 text-xs text-[var(--color-ink-mute)]">
           Shipping and taxes calculated at checkout.
         </p>
         <CheckoutButton />
@@ -134,14 +151,11 @@ function CheckoutButton() {
   const cart = useCart();
   const fetcher = useFetcher<{ checkoutUrl?: string; error?: string }>();
 
-  // Any line missing a variantId means we're in static-fallback mode and
-  // the Shopify cart create will be rejected by the action.
   const missingVariant = cart.lines.some((l) => !l.variantId);
   const empty = cart.lines.length === 0;
   const submitting = fetcher.state === "submitting" || fetcher.state === "loading";
   const disabled = empty || missingVariant || submitting;
 
-  // Redirect to Shopify hosted checkout once the action returns the URL.
   useEffect(() => {
     if (fetcher.data?.checkoutUrl && typeof window !== "undefined") {
       window.location.href = fetcher.data.checkoutUrl;
@@ -155,9 +169,6 @@ function CheckoutButton() {
       "USD",
       cart.lines.reduce((n, l) => n + l.quantity, 0),
     );
-    // The disabled gate above already excludes lines without a variantId,
-    // but TS still sees CartLine.variantId as optional. Filter + cast to
-    // give the action a clean payload.
     const lines = cart.lines
       .filter((l): l is typeof l & { variantId: string } => Boolean(l.variantId))
       .map((l) => ({ variantId: l.variantId, quantity: l.quantity }));
@@ -175,19 +186,19 @@ function CheckoutButton() {
     <>
       <button
         type="button"
-        className="btn btn-primary cart-checkout-btn"
         onClick={onClick}
         disabled={disabled}
+        className="btn-primary mt-3 w-full"
       >
         {submitting ? "Preparing checkout…" : "Checkout"}
       </button>
       {missingVariant && !submitting && !fetcher.data?.error && (
-        <p className="cart-demo-note">Checkout is not yet configured.</p>
+        <p className="mt-2 text-xs text-[var(--color-ink-mute)]">
+          Checkout is not yet configured.
+        </p>
       )}
       {fetcher.data?.error && (
-        <p className="cart-demo-note" style={{ color: "#b3261e" }}>
-          {fetcher.data.error}
-        </p>
+        <p className="mt-2 text-xs text-[#b3261e]">{fetcher.data.error}</p>
       )}
     </>
   );

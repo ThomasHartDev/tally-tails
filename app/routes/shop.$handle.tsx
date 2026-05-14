@@ -11,7 +11,6 @@ import { ReviewForm } from "~/components/ReviewForm";
 import { useCart } from "~/lib/cart-context";
 import { brand } from "~/brand";
 import { breadcrumbList, useJsonLd, useSeo } from "~/lib/seo";
-import "~/styles/routes/shop.$handle.css";
 
 export async function loader({ context, params }: LoaderFunctionArgs) {
   const product = await getProduct(
@@ -31,8 +30,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const url = `${brand.baseUrl}/shop/${product.handle}`;
   const img = product.images[0];
   const imgUrl = img?.url ?? brand.ogImage;
-  // Shopify CDN URLs are already absolute. Only prefix the brand origin for
-  // the static fallback paths.
   const image = /^https?:\/\//i.test(imgUrl) ? imgUrl : `${brand.baseUrl}${imgUrl}`;
   return [
     { title },
@@ -59,16 +56,27 @@ export default function ProductPage() {
   const img = product.images[0];
   const staticReviews = getReviews(product.handle);
   const [userReviews, setUserReviews] = useState<Review[]>([]);
-  // Load user-submitted reviews after hydration. Doing this in an effect
-  // keeps SSR output stable (no hydration mismatch from localStorage).
   useEffect(() => {
     setUserReviews(loadUserReviews(product.handle));
   }, [product.handle]);
-  // Fire view-product analytics once per PDP.
   useEffect(() => {
     metaPixel.viewContent(product);
     klaviyoEvents.viewedProduct(product);
   }, [product]);
+
+  // Flip the page palette to the product's tribe while the PDP is open.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const tribe =
+      product.category === "cat" || product.category === "dog"
+        ? product.category
+        : "neutral";
+    document.documentElement.setAttribute("data-tribe", tribe);
+    return () => {
+      document.documentElement.setAttribute("data-tribe", "neutral");
+    };
+  }, [product.category]);
+
   const reviews = useMemo(
     () => [...userReviews, ...staticReviews],
     [userReviews, staticReviews],
@@ -78,8 +86,6 @@ export default function ProductPage() {
     const sum = reviews.reduce((s, r) => s + r.rating, 0);
     return { avg: sum / reviews.length, count: reviews.length };
   }, [reviews]);
-  // JSON-LD uses static reviews only. Including localStorage entries would
-  // poison schema.org aggregateRating with unverified data.
   const staticSummary = useMemo(() => {
     if (staticReviews.length === 0) return { avg: 0, count: 0 };
     const sum = staticReviews.reduce((s, r) => s + r.rating, 0);
@@ -136,12 +142,22 @@ export default function ProductPage() {
       { name: "Home", path: "/" },
       { name: "Catalog", path: "/#catalog" },
       { name: product.title, path: `/shop/${product.handle}` },
-    ])
+    ]),
   );
 
-  // Shopify-sourced products don't carry the static spec schema. Only show
-  // the dimensions table for static products that explicitly include it.
-  // Same idea for the long-form prose paragraphs.
+  const tribeLabel =
+    product.category === "cat"
+      ? "Cat side"
+      : product.category === "dog"
+        ? "Dog side"
+        : "Bundle";
+  const tribeAccent =
+    product.category === "cat"
+      ? "text-[var(--color-cat)]"
+      : product.category === "dog"
+        ? "text-[var(--color-dog)]"
+        : "text-[var(--color-ink)]";
+
   const specs = product.specs;
   const detailsParagraphs = product.details ?? [product.description];
   const priceLabel = Number(product.price.amount).toFixed(2);
@@ -150,9 +166,33 @@ export default function ProductPage() {
     : null;
 
   return (
-    <div className="pdp container">
-      <div className="pdp-grid">
-        <div className="pdp-image">
+    <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
+      {/* Breadcrumb */}
+      <nav className="mb-6 text-xs text-[var(--color-ink-mute)]" aria-label="Breadcrumb">
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link to="/" className="hover:text-[var(--color-ink)]">Home</Link>
+          </li>
+          <li aria-hidden>›</li>
+          <li>
+            <Link
+              to={
+                product.category === "cat" || product.category === "dog"
+                  ? `/?side=${product.category}#catalog`
+                  : "/#catalog"
+              }
+              className="hover:text-[var(--color-ink)]"
+            >
+              {tribeLabel}
+            </Link>
+          </li>
+          <li aria-hidden>›</li>
+          <li className="truncate text-[var(--color-ink)]">{product.title}</li>
+        </ol>
+      </nav>
+
+      <div className="grid gap-8 md:grid-cols-2 md:gap-12">
+        <div className="overflow-hidden rounded-3xl bg-[var(--color-surface-2)]">
           {img && (
             <img
               src={img.url}
@@ -160,78 +200,113 @@ export default function ProductPage() {
               fetchPriority="high"
               decoding="async"
               width="1200"
-              height="1500"
+              height="1200"
+              className="h-full w-full object-cover"
             />
           )}
         </div>
 
-        <div className="pdp-info">
-          <span className="eyebrow">{product.vendor}</span>
-          <h1 className="pdp-title">{product.title}</h1>
+        <div className="flex flex-col">
+          <span
+            className={`text-xs font-semibold uppercase tracking-[0.18em] ${tribeAccent}`}
+          >
+            {tribeLabel} · {product.vendor}
+          </span>
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)] md:text-4xl">
+            {product.title}
+          </h1>
+
           {summary.count > 0 && (
-            <a href="#reviews" className="pdp-rating">
+            <a
+              href="#reviews"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]"
+            >
               <Stars rating={summary.avg} size="sm" />
-              <span className="pdp-rating-text">
-                {summary.avg.toFixed(1)} · {summary.count} reviews
+              <span>
+                {summary.avg.toFixed(1)} · {summary.count}{" "}
+                {summary.count === 1 ? "review" : "reviews"}
               </span>
             </a>
           )}
-          <p className="pdp-price">
+
+          <p className="mt-4 flex items-baseline gap-3 font-display text-3xl font-bold tabular-nums text-[var(--color-ink)]">
             ${priceLabel}
             {compareLabel && (
-              <span className="pdp-price-compare">${compareLabel}</span>
+              <span className="text-base font-normal text-[var(--color-ink-mute)] line-through">
+                ${compareLabel}
+              </span>
             )}
           </p>
-          <p className="pdp-description">{product.description}</p>
-          <div className="pdp-qty">
+
+          <p className="mt-4 max-w-prose text-base leading-relaxed text-[var(--color-ink-soft)]">
+            {product.description}
+          </p>
+
+          <div className="mt-6 flex items-center gap-3">
+            <div className="inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] p-1">
+              <button
+                type="button"
+                className="cart-qty-btn"
+                onClick={() => setQty(Math.max(1, qty - 1))}
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <span aria-label={`Quantity ${qty}`} className="min-w-[28px] text-center text-sm font-semibold tabular-nums">
+                {qty}
+              </span>
+              <button
+                type="button"
+                className="cart-qty-btn"
+                onClick={() => setQty(qty + 1)}
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
             <button
               type="button"
-              onClick={() => setQty(Math.max(1, qty - 1))}
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span aria-label={`Quantity ${qty}`}>{qty}</span>
-            <button
-              type="button"
-              onClick={() => setQty(qty + 1)}
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
-          <div className="pdp-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
               onClick={() => {
                 addItem(product, qty);
                 metaPixel.addToCart(product, qty);
                 klaviyoEvents.addedToCart(product, qty);
               }}
+              className="btn-primary flex-1"
             >
               Add to cart
+              {product.category !== "bundles" && (
+                <span className="opacity-80">
+                  · +{qty} {product.category} side
+                </span>
+              )}
             </button>
-            <Link to="/#catalog" className="btn btn-outline">
-              Back to catalog
-            </Link>
           </div>
-          <p className="pdp-disclaimer">
-            Portfolio demo. Add-to-cart and checkout flow are real, no live
+
+          <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-[var(--color-ink-soft)]">
+            <li>Ships in 48 hours</li>
+            <li>Free returns over $50</li>
+            <li>US warehouse</li>
+          </ul>
+
+          <p className="mt-6 text-xs text-[var(--color-ink-mute)]">
+            Portfolio demo. Add-to-cart and checkout work end to end, no live
             payment is captured.
           </p>
         </div>
       </div>
 
-      <div className="pdp-detail-grid">
+      <div className="mt-16 grid gap-10 md:grid-cols-3">
         <section
-          className="pdp-detail pdp-detail-description"
           aria-labelledby="pdp-description-heading"
+          className="md:col-span-2"
         >
-          <h2 id="pdp-description-heading" className="pdp-detail-heading">
+          <h2
+            id="pdp-description-heading"
+            className="font-display text-xl font-semibold text-[var(--color-ink)]"
+          >
             Description
           </h2>
-          <div className="pdp-detail-body">
+          <div className="mt-3 space-y-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
             {detailsParagraphs.map((para, i) => (
               <p key={i}>{para}</p>
             ))}
@@ -240,64 +315,61 @@ export default function ProductPage() {
 
         {specs && (
           <section
-            className="pdp-detail pdp-detail-specs"
             aria-labelledby="pdp-specs-heading"
+            className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-6"
           >
-            <h2 id="pdp-specs-heading" className="pdp-detail-heading">
+            <h2
+              id="pdp-specs-heading"
+              className="font-display text-base font-semibold text-[var(--color-ink)]"
+            >
               Dimensions &amp; specs
             </h2>
-            <dl className="pdp-specs-list">
-              <div className="pdp-spec-row">
-                <dt>Dimensions</dt>
-                <dd>{specs.dimensions}</dd>
-              </div>
-              <div className="pdp-spec-row">
-                <dt>Weight</dt>
-                <dd>{specs.weight}</dd>
-              </div>
-              <div className="pdp-spec-row pdp-spec-row-wide">
-                <dt>Materials</dt>
-                <dd>{specs.materials}</dd>
-              </div>
-              <div className="pdp-spec-row pdp-spec-row-wide">
-                <dt>Intended for</dt>
-                <dd>{specs.intendedFor}</dd>
-              </div>
-              <div className="pdp-spec-row pdp-spec-row-wide">
-                <dt>Features</dt>
-                <dd>{specs.features}</dd>
-              </div>
-              <div className="pdp-spec-row pdp-spec-row-wide">
-                <dt>Origin</dt>
-                <dd>{specs.origin}</dd>
-              </div>
+            <dl className="mt-3 space-y-3 text-sm">
+              {(
+                [
+                  ["Dimensions", specs.dimensions],
+                  ["Weight", specs.weight],
+                  ["Materials", specs.materials],
+                  ["Intended for", specs.intendedFor],
+                  ["Features", specs.features],
+                  ["Origin", specs.origin],
+                ] as const
+              ).map(([k, v]) => (
+                <div key={k} className="flex flex-col gap-0.5">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-mute)]">
+                    {k}
+                  </dt>
+                  <dd className="text-[var(--color-ink)]">{v}</dd>
+                </div>
+              ))}
             </dl>
           </section>
         )}
       </div>
 
-      <section id="reviews" className="pdp-reviews">
-        <header className="pdp-reviews-head">
-          <span className="eyebrow">What buyers said</span>
+      <section id="reviews" className="mt-20 scroll-mt-20">
+        <header className="mb-8 max-w-prose">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
+            What buyers said
+          </span>
           {summary.count > 0 ? (
             <>
-              <h2 className="pdp-reviews-title">
+              <h2 className="mt-1 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)]">
                 {summary.avg.toFixed(1)}
-                <span className="pdp-reviews-out-of"> out of 5</span>
+                <span className="text-base font-normal text-[var(--color-ink-mute)]"> out of 5</span>
               </h2>
-              <Stars rating={summary.avg} size="lg" />
-              <p className="pdp-reviews-count">
+              <div className="mt-2"><Stars rating={summary.avg} size="lg" /></div>
+              <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
                 Based on {summary.count}{" "}
-                {summary.count === 1 ? "review" : "reviews"}
+                {summary.count === 1 ? "review" : "reviews"}.
               </p>
             </>
           ) : (
             <>
-              <h2 className="pdp-reviews-title">
-                No reviews
-                <span className="pdp-reviews-out-of"> yet</span>
+              <h2 className="mt-1 font-display text-3xl font-bold tracking-[-0.04em] text-[var(--color-ink)]">
+                No reviews yet
               </h2>
-              <p className="pdp-reviews-count">
+              <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
                 Be the first to share how this one worked for you.
               </p>
             </>
