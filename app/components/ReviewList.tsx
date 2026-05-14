@@ -1,32 +1,33 @@
 import { Stars } from "./Stars";
 import type { Review } from "~/data/reviews";
-import "./ReviewList.css";
 
 export function ReviewList({ reviews }: { reviews: Review[] }) {
   if (reviews.length === 0) {
     return (
-      <p className="reviews-empty">
+      <p className="rounded-2xl border border-dashed border-[var(--color-line)] p-8 text-center text-sm text-[var(--color-ink-soft)]">
         No reviews yet. Be the first.
       </p>
     );
   }
 
   return (
-    <ul className="reviews">
+    <ul className="divide-y divide-[var(--color-line)]">
       {reviews.map((r) => (
-        <li key={r.id} className="review">
-          <header className="review-head">
+        <li key={r.id} className="py-6 first:pt-0">
+          <header className="flex items-center gap-3">
             <Stars rating={r.rating} size="sm" />
-            <h3 className="review-title">{r.title}</h3>
+            <h3 className="font-display text-base font-semibold text-[var(--color-ink)]">
+              {r.title}
+            </h3>
           </header>
-          <p className="review-body">{r.body}</p>
-          <footer className="review-meta">
-            <span className="review-author">
-              {r.author}
-              {r.location ? <span className="review-location">{` · ${r.location}`}</span> : null}
-            </span>
-            <span className="review-dot" aria-hidden="true">·</span>
-            <time dateTime={r.date} className="review-date">
+          <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            {r.body}
+          </p>
+          <footer className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--color-ink-mute)]">
+            <span className="font-semibold text-[var(--color-ink)]">{r.author}</span>
+            {r.location && <span>· {r.location}</span>}
+            <span aria-hidden>·</span>
+            <time dateTime={r.date}>
               {new Date(r.date).toLocaleDateString(undefined, {
                 month: "long",
                 year: "numeric",
@@ -34,8 +35,10 @@ export function ReviewList({ reviews }: { reviews: Review[] }) {
             </time>
             {r.verified && (
               <>
-                <span className="review-dot" aria-hidden="true">·</span>
-                <span className="review-verified">Verified buyer</span>
+                <span aria-hidden>·</span>
+                <span className="rounded-full bg-[var(--color-surface-2)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-soft)]">
+                  Verified buyer
+                </span>
               </>
             )}
           </footer>
