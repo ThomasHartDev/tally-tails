@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+/* Tailwind v4 source globs. The plugin auto-detects tsx/ts/jsx/js but
+   the explicit declarations also pick up className strings split across
+   props. */
+@source "../**/*.{tsx,ts,jsx,js}";
+
+/* ---------------------------------------------------------------------
+   Design tokens. Three palettes layered via the [data-tribe] attribute
+   on <html>. The Cat and Dog palettes both override the neutral
+   variables when their data-tribe value is set, so component-level
+   classes that read --color-accent / --color-bg auto-flip on toggle.
+   --------------------------------------------------------------------- */
+
+@theme {
+  /* Type */
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-loose: 1.7;
+
+  --tracking-tight: -0.02em;
+  --tracking-display: -0.04em;
+
+  /* Sizes — keep mobile-readable */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.5rem;     /* 40px */
+  --text-5xl: 3.5rem;     /* 56px */
+  --text-6xl: 5rem;       /* 80px */
+  --text-7xl: 6.5rem;     /* 104px */
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Neutral surface palette — the default "no side picked" look */
+  --color-bg: #fdfcf7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f3ec;
+  --color-ink: #1a1a1f;
+  --color-ink-soft: #4a4a55;
+  --color-ink-mute: #7c7c87;
+  --color-line: #e7e5dc;
+  --color-accent: #1a1a1f;
+  --color-accent-ink: #fdfcf7;
+
+  /* Tribe-coded accents — referenced explicitly when a component needs
+     the cat OR dog color regardless of the global tribe (e.g. a cat-side
+     product card on a neutral page). */
+  --color-cat: #5b9dd9;
+  --color-cat-deep: #1f4a7a;
+  --color-cat-bg: #0f1a2a;
+  --color-cat-surface: #1a2a40;
+  --color-cat-ink: #f3f6fb;
+  --color-cat-gold: #d4b95e;
+
+  --color-dog: #e8853a;
+  --color-dog-deep: #a3531f;
+  --color-dog-bg: #2a1810;
+  --color-dog-surface: #3d2a1d;
+  --color-dog-ink: #fdf6ec;
+  --color-dog-gold: #f4c969;
+}
+
+/* Cat tribe overrides — applied when <html data-tribe="cat"> */
+[data-tribe="cat"] {
+  --color-bg: #0f1a2a;
+  --color-surface: #1a2a40;
+  --color-surface-2: #233655;
+  --color-ink: #f3f6fb;
+  --color-ink-soft: #a7b8d0;
+  --color-ink-mute: #6f80a0;
+  --color-line: #2e4366;
+  --color-accent: #5b9dd9;
+  --color-accent-ink: #0f1a2a;
+}
+
+/* Dog tribe overrides — applied when <html data-tribe="dog"> */
+[data-tribe="dog"] {
+  --color-bg: #2a1810;
+  --color-surface: #3d2a1d;
+  --color-surface-2: #4d3826;
+  --color-ink: #fdf6ec;
+  --color-ink-soft: #d9c4a6;
+  --color-ink-mute: #99846a;
+  --color-line: #5d4630;
+  --color-accent: #e8853a;
+  --color-accent-ink: #2a1810;
+}
+
+/* ---------------------------------------------------------------------
+   Base layer — reset + page chrome. Tailwind's preflight handles most of
+   the reset; this just sets the page surface + smooths scroll.
+   --------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--leading-tight);
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  /* Tailwind v4 reset removes default link underlines. Restore them on
+     anything inside prose-like blocks via the .prose-link utility. */
+}
+
+/* ---------------------------------------------------------------------
+   Component utility shortcuts. Tailwind v4 lets us define class names
+   that compose other utilities via @utility. Keeping these tight so we
+   don't end up reinventing shadcn.
+   --------------------------------------------------------------------- */
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:hover { transform: translateY(-1px); box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.25); }
+  &:active { transform: translateY(0); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+}
+
+@utility btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--color-ink);
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border: 1px solid var(--color-line);
+  transition: background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover { background: var(--color-surface-2); border-color: var(--color-ink); }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--color-ink);
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  border: 1px solid transparent;
+  transition: background 0.15s ease;
+  cursor: pointer;
+
+  &:hover { background: var(--color-surface-2); }
+}
+
+@utility tribe-cat {
+  --color-accent: var(--color-cat);
+  --color-accent-ink: var(--color-cat-bg);
+}
+
+@utility tribe-dog {
+  --color-accent: var(--color-dog);
+  --color-accent-ink: var(--color-dog-bg);
+}
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+@utility surface-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+/* Tally numbers. Used in the hero and the sticky header chip. */
+@utility tally-num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-display);
+  font-weight: 700;
+}
+
+/* Custom range for cart progress / quantity inputs without browser
+   inconsistency. */
+.cart-qty-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cart-qty-btn:hover { background: var(--color-surface-2); }
+.cart-qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Sticky add-to-cart bar shadow */
+.shadow-stack {
+  box-shadow: 0 -10px 24px -12px rgba(0, 0, 0, 0.12);
+}
+
+/* Star rating glyph layer */
+.stars-row {
+  display: inline-flex;
+  position: relative;
+  font-family: system-ui, sans-serif;
+  letter-spacing: 0.08em;
+}
+.stars-base { color: color-mix(in oklab, var(--color-ink) 18%, transparent); }
+.stars-fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: #f4b740;
+  white-space: nowrap;
+}
