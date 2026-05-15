@@ -19,7 +19,6 @@ import { Footer } from "~/components/Footer";
 import { CartDrawer } from "~/components/CartDrawer";
 import { AnalyticsScripts } from "~/components/AnalyticsScripts";
 import { EmailDiscountPopup } from "~/components/EmailDiscountPopup";
-import { TallyFloater } from "~/components/TallyFloater";
 // Tailwind v4 compiles this file in-place. The `?inline` import returns
 // the compiled CSS as a string so we can embed it in a <style> tag,
 // dodging the dev-mode link/MIME bug documented in
@@ -104,7 +103,6 @@ export default function App() {
       </main>
       <Footer />
       <CartDrawer />
-      <TallyFloater />
       <EmailDiscountPopup
         klaviyoPublicKey={env?.klaviyoPublicKey}
         klaviyoListId={env?.klaviyoListId}
