@@ -45,16 +45,25 @@
   --radius-xl: 28px;
   --radius-full: 9999px;
 
-  /* Neutral surface palette — the default "no side picked" look */
-  --color-bg: #fdfcf7;
-  --color-surface: #ffffff;
-  --color-surface-2: #f5f3ec;
+  /* Neutral surface palette. Warm pale-sand base, distinctly NOT the
+     Claude-cream / Anthropic-warm-off-white default. Reads "natural pet
+     store" rather than "tech product page". Card tints (cat / dog
+     surface-tints below) still pop against this. */
+  --color-bg: #f0ebe0;
+  --color-surface: #f7f3ea;
+  --color-surface-2: #e6dfd0;
   --color-ink: #1a1a1f;
   --color-ink-soft: #4a4a55;
   --color-ink-mute: #7c7c87;
-  --color-line: #e7e5dc;
+  --color-line: #d8d1bf;
   --color-accent: #1a1a1f;
-  --color-accent-ink: #fdfcf7;
+  --color-accent-ink: #f0ebe0;
+
+  /* Subtle tribe-tints for product cards. Used on cards regardless of the
+     global data-tribe so the catalog stays color-readable on the neutral
+     page. Distinct from the deep tribe palettes below. */
+  --color-cat-tint: #e1ecf5;
+  --color-dog-tint: #f7ddc5;
 
   /* Tribe-coded accents — referenced explicitly when a component needs
      the cat OR dog color regardless of the global tribe (e.g. a cat-side
